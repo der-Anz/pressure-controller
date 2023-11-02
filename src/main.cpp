@@ -503,34 +503,34 @@ void modeConstant()
 	if ((modeActive == true) && (mode == MODE_CONST_OUT) && (actualScreen == MENU_MAIN_SCREEN))
 	{
 
-		actualTime = millis();
+		actualTime = millis(); 				// Überprüfung Druck alle 150 ms
 		if ((actualTime - oldTime) > 150)
 		{
-			getPressureValue();	   // Istwert
-			getPressureSetValue(); // Sollwert
+			getPressureValue();	   			// Istwert
+			getPressureSetValue(); 			// Sollwert
 			oldTime = actualTime;
 		}
 
-		if (pressureValue > pressureupperLim)
+		if (pressureValue > pressureupperLim)	//Druck zu hoch
 		{ // Regelung
-			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, LOW);
+			digitalWrite(PUMP_PIN, LOW);		//Pumpe aus
+			digitalWrite(AIRRELAISE_PIN, LOW);	//Ablassventil öffnen
 			lcd.setCursor(19, 1);
-			lcd.write(1);
+			lcd.write(1);						//arrow down
 		}
-		else if (pressureValue <= pressurelowerLim)
+		else if (pressureValue <= pressurelowerLim)//Druck zu niedrig
 		{
-			digitalWrite(PUMP_PIN, HIGH);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(PUMP_PIN, HIGH);		//Pumpe ein
+			digitalWrite(AIRRELAISE_PIN, HIGH);	//Ablassventil schließen
 			lcd.setCursor(19, 1);
-			lcd.write(0);
+			lcd.write(0);						//arrow up
 		}
-		else if (pressureValue >= pressureSet)
+		else if (pressureValue >= pressureSet)	//Druck erreicht oder halten
 		{
-			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(PUMP_PIN, LOW);		//Pumpe aus
+			digitalWrite(AIRRELAISE_PIN, HIGH);	//Ablassventil schließen
 			lcd.setCursor(19, 1);
-			lcd.print('-');
+			lcd.print('-');						//konstant
 		}
 		else
 		{
@@ -1069,7 +1069,7 @@ void modeStepUp()
 			digitalWrite(AIRRELAISE_PIN, HIGH);
 		}
 
-		// Erh�hungsintervall
+		// Erhöhungsintervall
 		if (clockSet == false)
 		{
 			clockTime = millis();
