@@ -1,8 +1,8 @@
-# Pumpensteuerung
+# pressure-controller
 
 ```mermaid
 ---
-title: Pumpensteuerung
+title: Hardware States
 ---
 stateDiagram-v2
 
@@ -25,9 +25,13 @@ holdPressureS --> releasePressureS :eventSafety_SW
 ```
 
 ```mermaid
-
+---
+title: Dispay States
+---
 stateDiagram-v2
-    [*] --> boot_screen: einschalten
-   boot_screen --> main_screen: Zeit
+    [*] --> StartScreen: einschalten
+   StartScreen --> SelectScreen: Pusch button
+   SelectScreen --> OperatingScreen: Mode selected
+  OperatingScreen --> SelectScreen: Timer
 
 ```
