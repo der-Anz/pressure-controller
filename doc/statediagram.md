@@ -7,10 +7,10 @@ title: Hardware States
 stateDiagram-v2
 
 [*] --> idleS
-idleS --> releasePressureS :modeSelected 
+idleS --> releasePressureS :modeSelected
 
 
-releasePressureS --> holdPressureS:selectedRoutine                  
+releasePressureS --> holdPressureS:selectedRoutine
 
 %%releasePressureS --> pumpingPressureS :selectedRoutine
 

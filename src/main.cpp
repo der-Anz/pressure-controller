@@ -83,7 +83,7 @@ void setup()
 	randomSeed(analogRead(A0));
 	pinMode(PUMP_PIN, OUTPUT);
 	pinMode(ACTIVE_LED_PIN, OUTPUT);
-	pinMode(AIRRELAISE_PIN, OUTPUT);
+	pinMode(AIR_RELEASE_PIN, OUTPUT);
 	pinMode(ENABLE_PIN, INPUT_PULLUP);
 	pinMode(SELECT_PIN, INPUT);
 
@@ -111,12 +111,13 @@ void loop()
 			actualScreen = screenSelect;
 			buttonPressed = false;
 		}
+
 		// wenn Modus aktiv und button pressed dann Modus verlassen und zurück zum select screen
 		if ((modeActive == true) && (buttonPressed == true) && (parameterChange == false))
 		{
 			modeActive = false;
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, LOW);
+			digitalWrite(AIR_RELEASE_PIN, LOW);
 			screenSelect = MENU_SELECT_SCREEN;
 			changeScreen();
 			actualScreen = screenSelect;
@@ -138,12 +139,13 @@ void loop()
 			{
 				screenSelect = MENU_SELECT_SCREEN;
 				digitalWrite(PUMP_PIN, LOW);
-				digitalWrite(AIRRELAISE_PIN, LOW);
+				digitalWrite(AIR_RELEASE_PIN, LOW);
 				changeScreen();
 				actualScreen = screenSelect;
 				buttonPressed = false;
 			}
 		}
+
 		//Eintritt in den operationellen Modus
 		if (((modeActive == false) && (actualScreen = MENU_SELECT_SCREEN)) && ((digitalRead(ENABLE_PIN) == LOW) && (buttonPressed == true)))
 		{
@@ -152,6 +154,7 @@ void loop()
 			digitalWrite(ACTIVE_LED_PIN, HIGH);
 			buttonPressed = false;
 		}
+		
 		// Notaus aktiv
 		if ((digitalRead(ENABLE_PIN) == HIGH) && (buttonPressed == true))
 		{
@@ -178,7 +181,7 @@ void loop()
 	if (modeActive == false)
 	{
 		digitalWrite(PUMP_PIN, LOW);
-		digitalWrite(AIRRELAISE_PIN, LOW);
+		digitalWrite(AIR_RELEASE_PIN, LOW);
 		digitalWrite(ACTIVE_LED_PIN, LOW);
 	}
 
@@ -230,7 +233,7 @@ void loop()
 	if ((modeActive == true) && (digitalRead(ENABLE_PIN) == true))
 	{
 		digitalWrite(PUMP_PIN, LOW);
-		digitalWrite(AIRRELAISE_PIN, LOW);
+		digitalWrite(AIR_RELEASE_PIN, LOW);
 		modeActive = false;
 		screenSelect = MENU_SELECT_SCREEN;
 		changeScreen();
@@ -240,6 +243,7 @@ void loop()
 		lcd.setCursor(0, 1);
 		lcd.print("Notaus aktiv");
 	}
+
 	// Eintritt in Messmodus ##############################################################################
 	if ((modeActive == true) && (screenSelect != MENU_MAIN_SCREEN))
 	{
@@ -249,6 +253,7 @@ void loop()
 		LCD_Update_pressureSet(pressureSet);
 		actualScreen = screenSelect;
 	}
+
 	switch (mode)
 	{
 	case MODE_RANDOM:
@@ -443,7 +448,6 @@ void rotaryTurnedInterrupt()
 
 void buttonPressedInterrupt()
 {
-
 	while (buttonPressed == false)
 	{
 		int i = 0;
@@ -504,7 +508,6 @@ void modeConstant()
 	// Mode Constant output aktiv #########################################################################
 	if ((modeActive == true) && (mode == MODE_CONST_OUT) && (actualScreen == MENU_MAIN_SCREEN))
 	{
-
 		actualTime = millis(); 				// Überprüfung Druck alle 150 ms
 		if ((actualTime - oldTime) > 150)
 		{
@@ -516,27 +519,27 @@ void modeConstant()
 		if (pressureValue > pressureupperLim)	//Druck zu hoch
 		{ // Regelung
 			digitalWrite(PUMP_PIN, LOW);		//Pumpe aus
-			digitalWrite(AIRRELAISE_PIN, LOW);	//Ablassventil öffnen
+			digitalWrite(AIR_RELEASE_PIN, LOW);	//Ablassventil öffnen
 			lcd.setCursor(19, 1);
 			lcd.write(1);						//arrow down
 		}
 		else if (pressureValue <= pressurelowerLim)//Druck zu niedrig
 		{
 			digitalWrite(PUMP_PIN, HIGH);		//Pumpe ein
-			digitalWrite(AIRRELAISE_PIN, HIGH);	//Ablassventil schließen
+			digitalWrite(AIR_RELEASE_PIN, HIGH);	//Ablassventil schließen
 			lcd.setCursor(19, 1);
 			lcd.write(0);						//arrow up
 		}
 		else if (pressureValue >= pressureSet)	//Druck erreicht oder halten
 		{
 			digitalWrite(PUMP_PIN, LOW);		//Pumpe aus
-			digitalWrite(AIRRELAISE_PIN, HIGH);	//Ablassventil schließen
+			digitalWrite(AIR_RELEASE_PIN, HIGH);	//Ablassventil schließen
 			lcd.setCursor(19, 1);
 			lcd.print('-');						//konstant
 		}
 		else
 		{
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 		}
 
 		// Abstelltimer
@@ -545,6 +548,7 @@ void modeConstant()
 			clockTime = millis();
 			clockSet = true;
 		}
+
 		if ((millis() - clockTime) > 1000)
 		{
 			timeHandler++;
@@ -561,6 +565,7 @@ void modeConstant()
 			lcd.print(remTime);
 			clockSet = false;
 		}
+
 		if (timeHandler >= 600)
 		{
 			modeActive = false;
@@ -575,11 +580,9 @@ void modeConstant()
 
 void modeRandom()
 {
-
 	// Mode Random output aktiv #########################################################################
 	if ((modeActive == true) && (mode == MODE_RANDOM) && (actualScreen == MENU_MAIN_SCREEN))
 	{
-
 		actualTime = millis();
 
 		if (((actualTime - oldTime) > 150) || (initMode == false))
@@ -589,10 +592,10 @@ void modeRandom()
 			getPressureSetValue(); // Sollwert
 			oldTime = actualTime;
 		}
+
 		if ((timeHandler >= 30) || (initMode == false))
 		{
 			// getPressureSetValue(1);
-
 			modifiedPressure = random(pressureSet);
 			modifiedPressureMax = modifiedPressure + 25;
 			modifiedPressureMin = modifiedPressure - 5;
@@ -624,7 +627,7 @@ void modeRandom()
 		if (pressureValue > modifiedPressureMax)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, LOW);
+			digitalWrite(AIR_RELEASE_PIN, LOW);
 			lcd.setCursor(19, 1);
 			lcd.write(1);
 			// Serial.println("F1");
@@ -632,7 +635,7 @@ void modeRandom()
 		else if (pressureValue <= modifiedPressureMin)
 		{
 			digitalWrite(PUMP_PIN, HIGH);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.write(0);
 			// Serial.println("F2");
@@ -640,14 +643,14 @@ void modeRandom()
 		else if (pressureValue >= modifiedPressure)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.print('-');
 			// Serial.println("F3");
 		}
 		else
 		{
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			// Serial.println("F4");
 		}
 
@@ -678,11 +681,9 @@ void modeRandom()
 
 void modeIncrease()
 {
-
 	// Mode Increasing output aktiv #########################################################################
 	if ((modeActive == true) && (mode == MODE_INC_OUT) && (actualScreen == MENU_MAIN_SCREEN))
 	{
-
 		if (initMode == false)
 		{
 			counter = 1;
@@ -695,6 +696,7 @@ void modeIncrease()
 			getPressureSetValue(); // Sollwert
 			oldTime = actualTime;
 		}
+
 		if ((timeHandler >= INTERVALL_TIME) || (initMode == false) || (newPressureSet == true))
 		{
 			if (newPressureSet != true)
@@ -738,35 +740,36 @@ void modeIncrease()
 		if (pressureValue > pressureupperLim)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, LOW);
+			digitalWrite(AIR_RELEASE_PIN, LOW);
 			lcd.setCursor(19, 1);
 			lcd.write(1);
 		}
 		else if (pressureValue <= pressurelowerLim)
 		{
 			digitalWrite(PUMP_PIN, HIGH);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.write(0);
 		}
 		else if (pressureValue >= pressureSet)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.print('-');
 		}
 		else
 		{
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 		}
 
-		// Erh�hungsintervall
+		// Erhöhungsintervall
 		if (clockSet == false)
 		{
 			clockTime = millis();
 			clockSet = true;
 		}
+
 		if ((millis() - clockTime) > 1000)
 		{
 			timeHandler++;
@@ -791,7 +794,6 @@ void modeSine()
 	// Mode Sine output aktiv #########################################################################
 	if ((modeActive == true) && (mode == MODE_SINE) && (actualScreen == MENU_MAIN_SCREEN))
 	{
-
 		// Initialisierung bei Eintritt
 		if (initMode == false)
 		{
@@ -806,6 +808,7 @@ void modeSine()
 			getPressureSetValue(); // Sollwert
 			oldTime = actualTime;
 		}
+
 		if (counter > 630)
 		{
 			counter = 270;
@@ -841,7 +844,7 @@ void modeSine()
 		if (pressureValue > modifiedPressureMax)
 		{ // Regelung
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, LOW);
+			digitalWrite(AIR_RELEASE_PIN, LOW);
 			lcd.setCursor(19, 1);
 			lcd.write(1);
 			// Serial.println("F1");
@@ -849,7 +852,7 @@ void modeSine()
 		else if (pressureValue <= modifiedPressureMin)
 		{
 			digitalWrite(PUMP_PIN, HIGH);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.write(0);
 			// Serial.println("F2");
@@ -857,14 +860,14 @@ void modeSine()
 		else if (pressureValue >= modifiedPressure)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.print('-');
 			// Serial.println("F3");
 		}
 		else
 		{
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			// Serial.println("F4");
 		}
 
@@ -887,7 +890,6 @@ void modeSquare()
 	// Mode Square output aktiv #########################################################################
 	if ((modeActive == true) && (mode == MODE_SQUARE) && (actualScreen == MENU_MAIN_SCREEN))
 	{
-
 		actualTime = millis();
 
 		if (((actualTime - oldTime) > 150) || (initMode == false))
@@ -897,6 +899,7 @@ void modeSquare()
 			getPressureSetValue(); // Sollwert
 			oldTime = actualTime;
 		}
+
 		if ((timeHandler >= 15) || (initMode == false))
 		{
 			// getPressureSetValue(1);
@@ -933,7 +936,7 @@ void modeSquare()
 		if (pressureValue > modifiedPressureMax)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, LOW);
+			digitalWrite(AIR_RELEASE_PIN, LOW);
 			lcd.setCursor(19, 1);
 			lcd.write(1);
 			// Serial.println("F1");
@@ -941,7 +944,7 @@ void modeSquare()
 		else if (pressureValue <= modifiedPressureMin)
 		{
 			digitalWrite(PUMP_PIN, HIGH);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.write(0);
 			// Serial.println("F2");
@@ -949,14 +952,14 @@ void modeSquare()
 		else if (pressureValue >= modifiedPressure)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.print('-');
 			// Serial.println("F3");
 		}
 		else
 		{
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			// Serial.println("F4");
 		}
 
@@ -987,11 +990,9 @@ void modeSquare()
 
 void modeStepUp()
 {
-
 	// Mode Step Up output aktiv #########################################################################
 	if ((modeActive == true) && (mode == MODE_STEPUP) && (actualScreen == MENU_MAIN_SCREEN))
 	{
-
 		if (initMode == false)
 		{
 			counter = 1;
@@ -1004,6 +1005,7 @@ void modeStepUp()
 			getPressureSetValue(); // Sollwert
 			oldTime = actualTime;
 		}
+
 		if ((timeHandler >= 15) || (initMode == false) || (newPressureSet == true))
 		{
 			if ((newPressureSet != true) && (toggler == false))
@@ -1048,27 +1050,27 @@ void modeStepUp()
 		if (pressureValue > modifiedPressureMax)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, LOW);
+			digitalWrite(AIR_RELEASE_PIN, LOW);
 			lcd.setCursor(19, 1);
 			lcd.write(1);
 		}
 		else if (pressureValue <= modifiedPressureMin)
 		{
 			digitalWrite(PUMP_PIN, HIGH);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.write(0);
 		}
 		else if (pressureValue >= modifiedPressure)
 		{
 			digitalWrite(PUMP_PIN, LOW);
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 			lcd.setCursor(19, 1);
 			lcd.print('-');
 		}
 		else
 		{
-			digitalWrite(AIRRELAISE_PIN, HIGH);
+			digitalWrite(AIR_RELEASE_PIN, HIGH);
 		}
 
 		// Erhöhungsintervall
@@ -1077,6 +1079,7 @@ void modeStepUp()
 			clockTime = millis();
 			clockSet = true;
 		}
+
 		if ((millis() - clockTime) > 1000)
 		{
 			timeHandler++;
