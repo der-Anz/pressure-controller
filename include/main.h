@@ -45,7 +45,7 @@ extern bool initMode;
 extern bool newPressureSet;
 extern bool toggler;
 
-extern int encoderCout;
+extern int encoderCount;
 extern unsigned long actualTime;
 extern unsigned long clockTime;
 extern unsigned long oldTime;
@@ -78,7 +78,7 @@ void modeStepUp();
 void changeScreen();
 void displayStartScreen();
 void displaySelectScreen();
-void displayMainScreen();
+void displayOperatingScreen();
 void updateSelectScreen();
 void LCD_Update_pressure(int pressure);
 void LCD_Update_pressureSet(int pressureSet);

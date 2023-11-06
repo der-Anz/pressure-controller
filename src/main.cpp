@@ -44,7 +44,7 @@ bool initMode = false;
 bool newPressureSet = false;
 bool toggler = false;
 
-int encoderCout = 0;
+int encoderCount = 0;
 unsigned long actualTime = 0;
 unsigned long clockTime = 0;
 unsigned long oldTime = 0;
@@ -121,8 +121,8 @@ void loop()
 			changeScreen();
 			actualScreen = screenSelect;
 			updateSelectScreen();
-			encoderCout = mode;
-			encoder.setPosition(encoderCout);
+			encoderCount = mode;
+			encoder.setPosition(encoderCount);
 			buttonPressed = false;
 		}
 
@@ -144,6 +144,7 @@ void loop()
 				buttonPressed = false;
 			}
 		}
+		//Eintritt in den operationellen Modus
 		if (((modeActive == false) && (actualScreen = MENU_SELECT_SCREEN)) && ((digitalRead(ENABLE_PIN) == LOW) && (buttonPressed == true)))
 		{
 			modeActive = true;
@@ -151,6 +152,7 @@ void loop()
 			digitalWrite(ACTIVE_LED_PIN, HIGH);
 			buttonPressed = false;
 		}
+		// Notaus aktiv
 		if ((digitalRead(ENABLE_PIN) == HIGH) && (buttonPressed == true))
 		{
 			modeActive = false;
@@ -182,37 +184,37 @@ void loop()
 
 	if (rotaryTurned && (modeActive == false))
 	{
-		// hier Verzweigung f�r verschiedene Anzeigen
+		// hier Verzweigung für verschiedene Anzeigen
 		if (actualScreen == MENU_SELECT_SCREEN)
 		{
-			if (encoderCout < MODE_MIN_INDEX)
+			if (encoderCount < MODE_MIN_INDEX)
 			{
-				encoderCout = MODE_MIN_INDEX;
-				encoder.setPosition(encoderCout);
+				encoderCount = MODE_MIN_INDEX;
+				encoder.setPosition(encoderCount);
 			}
-			else if (encoderCout > MODE_MAX_INDEX)
+			else if (encoderCount > MODE_MAX_INDEX)
 			{
-				encoderCout = MODE_MAX_INDEX;
-				encoder.setPosition(encoderCout);
+				encoderCount = MODE_MAX_INDEX;
+				encoder.setPosition(encoderCount);
 			}
-			if (mode != encoderCout)
+			if (mode != encoderCount)
 			{
-				mode = encoderCout;
+				mode = encoderCount;
 			}
 			updateSelectScreen();
 		}
 
 		if (actualScreen == MENU_MAIN_SCREEN)
 		{
-			if (encoderCout < 1)
+			if (encoderCount < 1)
 			{
-				encoderCout = 1;
-				encoder.setPosition(encoderCout);
+				encoderCount = 1;
+				encoder.setPosition(encoderCount);
 			}
-			else if (encoderCout > 100)
+			else if (encoderCount > 100)
 			{
-				encoderCout = 100;
-				encoder.setPosition(encoderCout);
+				encoderCount = 100;
+				encoder.setPosition(encoderCount);
 			}
 		}
 
@@ -285,7 +287,7 @@ void changeScreen()
 		displaySelectScreen();
 		break;
 	case MENU_MAIN_SCREEN:
-		displayMainScreen();
+		displayOperatingScreen();
 		break;
 	default:
 		displayStartScreen();
@@ -320,7 +322,7 @@ void displaySelectScreen()
 	lcd.print("                    ");
 }
 
-void displayMainScreen()
+void displayOperatingScreen()
 {
 	lcd.setCursor(0, 0);
 	lcd.print(modeLabels[mode]);
@@ -432,9 +434,9 @@ void rotaryTurnedInterrupt()
 {
 	encoder.tick();
 	int newPos = encoder.getPosition();
-	if (encoderCout != newPos)
+	if (encoderCount != newPos)
 	{
-		encoderCout = newPos;
+		encoderCount = newPos;
 		rotaryTurned = true;
 	}
 }
