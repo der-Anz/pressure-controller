@@ -1,4 +1,3 @@
-
 #pragma once
 
 constexpr auto SERIALSPEED = 115200;
