@@ -1,16 +1,15 @@
-
 #pragma once
 
 constexpr auto SERIALSPEED = 115200;
 
 // assign arduino pins
 // Interruptpins of MEGA2560 2, 3, 18, 19, 20, 21
-constexpr auto SELECT_PIN = 18;       // Button of Rotary;;
+constexpr auto SELECT_PIN = 18;       // Button of Rotary
 constexpr auto PRESSUREIN_PIN = A8;   // 0 - 5 V vom Drucksensor
 constexpr auto SETPRESSURE_PIN = A10; // Poti 0 - 5 V
 constexpr auto PUMP_PIN = 8;          // Kompressor Relais
 constexpr auto ENABLE_PIN = 52;       // Notaus (öffner)
-constexpr auto AIRRELAISE_PIN = 53;   // Ablassventil
+constexpr auto AIR_RELEASE_PIN = 53;  // Ablassventil
 constexpr auto ACTIVE_LED_PIN = 13;
 constexpr auto INTERVALL_TIME = 300;
 
